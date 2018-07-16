@@ -42,6 +42,8 @@ use pocketmine\inventory\{
 	DoubleChestInventory
 };
 use pocketmine\level\Position;
+use pocketmine\nbt\BigEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\permission\Permission;
 use pocketmine\plugin\PluginBase;
 use pocketmine\tile\Chest;
@@ -100,7 +102,19 @@ class RewardBox extends PluginBase{
 		$this->language = new PluginLang($this, $config->getNested("settings.language"));
 		$this->getLogger()->info($this->language->translateString("language.selected", [$this->language->getName(), $this->language->getLang()]));
 
-		//TODO: Load individual chest data
+		//Load reward boxs data
+		$this->rewardBoxs = [];
+		if(file_exists($file = "{$this->getDataFolder()}RewardBoxs.dat")){
+			$namedTag = (new BigEndianNBTStream())->readCompressed(file_get_contents($file));
+			if($namedTag instanceof CompoundTag){
+				/** @var CompoundTag $tag */
+				foreach($namedTag as $hash => $tag){
+					$this->rewardBoxs[$hash] = RewardBoxInventory::nbtDeserialize($tag);
+				}
+			}else{
+				$this->getLogger()->error("The file is not in the NBT-CompoundTag format : $file");
+			}
+		}
 
 		//Register main command
 		$this->command = new PluginCommand($config->getNested("command.name"), $this);
@@ -141,7 +155,12 @@ class RewardBox extends PluginBase{
 	 * Use this to free open things and finish actions
 	 */
 	public function onDisable() : void{
-		//TODO: Save individual chest data
+		//Save reward boxs data
+		$namedTag = new CompoundTag();
+		foreach($this->rewardBoxs as $hash => $rewardBoxInventory){
+			$namedTag->setTag($rewardBoxInventory->nbtSerialize(HashUtils::positionHash($rewardBoxInventory->getHolder())));
+		}
+		file_put_contents("{$this->getDataFolder()}RewardBoxs.dat", (new BigEndianNBTStream())->writeCompressed($namedTag));
 	}
 
 	/**
