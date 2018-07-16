@@ -29,12 +29,16 @@ namespace kim\present\rewardbox;
 use kim\present\rewardbox\command\{
 	CreateSubcommand, EditSubcommand, RemoveSubcommand, Subcommand
 };
+use kim\present\rewardbox\inventory\RewardBoxInventory;
 use kim\present\rewardbox\lang\PluginLang;
+use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\command\{
 	Command, CommandSender, PluginCommand
 };
+use pocketmine\level\Position;
 use pocketmine\permission\Permission;
 use pocketmine\plugin\PluginBase;
+use pocketmine\tile\Chest;
 
 class RewardBox extends PluginBase{
 	public const CREATE = 0;
@@ -58,7 +62,8 @@ class RewardBox extends PluginBase{
 	/** @var Subcommand[] */
 	private $subcommands;
 
-	//TODO: reward boxs data
+	/** @var RewardBoxInventory[] */
+	private $rewardBoxs = [];
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
@@ -195,5 +200,49 @@ class RewardBox extends PluginBase{
 	 */
 	public function getSubcommands() : array{
 		return $this->subcommands;
+	}
+
+	/**
+	 * @return RewardBoxInventory[]
+	 */
+	public function getRewardBoxs() : array{
+		return $this->rewardBoxs;
+	}
+
+	/**
+	 * @param Position $pos
+	 *
+	 * @return RewardBoxInventory|null
+	 */
+	public function getRewardBox(Position $pos) : ?RewardBoxInventory{
+		return $this->rewardBoxs[HashUtils::positionHash($pos)] ?? null;
+	}
+
+	/**
+	 * @param Position $pos
+	 *
+	 * @return bool true if exists and successful remove, else false
+	 */
+	public function removeRewardBox(Position $pos) : bool{
+		if(isset($this->rewardBoxs[$hash = HashUtils::positionHash($pos)])){
+			unset($this->rewardBoxs[$hash]);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @param Chest  $chest
+	 * @param string $customName   = "RewardBox"
+	 * @param int    $creationTime = null
+	 *
+	 * @return bool true if successful creation, else false
+	 */
+	public function createRewardBox(Chest $chest, string $customName = "RewardBox", int $creationTime = null) : bool{
+		if(!isset($this->rewardBoxs[$hash = HashUtils::positionHash($chest)])){
+			$this->rewardBoxs[$hash] = new RewardBoxInventory($chest, $chest->getInventory()->getContents(true), $customName, $creationTime);
+			return true;
+		}
+		return false;
 	}
 }
