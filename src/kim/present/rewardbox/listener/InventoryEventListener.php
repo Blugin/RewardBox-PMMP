@@ -62,6 +62,21 @@ class InventoryEventListener implements Listener{
 				if($inventory instanceof RewardInventory && $action->getSourceItem()->count < $action->getTargetItem()->count){
 					$event->setCancelled();
 					return;
+				}elseif($inventory instanceof ChestInventory && $action->getSourceItem()->count < $action->getTargetItem()->count){
+					/** @var ChestInventory[] $chestInventories */
+					$chestInventories = [];
+					if($inventory instanceof DoubleChestInventory){
+						$chestInventories[] = $inventory->getLeftSide();
+						$chestInventories[] = $inventory->getRightSide();
+					}else{
+						$chestInventories[] = $inventory;
+					}
+					foreach($chestInventories as $key2 => $chestInventory){
+						if($this->plugin->getRewardBox($chestInventory->getHolder()) !== null){
+							$event->setCancelled();
+							return;
+						}
+					}
 				}
 			}
 		}
