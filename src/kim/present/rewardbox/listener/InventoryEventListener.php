@@ -57,12 +57,12 @@ class InventoryEventListener implements Listener{
 	 */
 	public function onInventoryTransactionEvent(InventoryTransactionEvent $event) : void{
 		foreach($event->getTransaction()->getActions() as $key => $action){
-			if($action instanceof SlotChangeAction){
+			if($action instanceof SlotChangeAction && $action->getSourceItem()->count < $action->getTargetItem()->count){
 				$inventory = $action->getInventory();
-				if($inventory instanceof RewardInventory && $action->getSourceItem()->count < $action->getTargetItem()->count){
+				if($inventory instanceof RewardInventory){
 					$event->setCancelled();
 					return;
-				}elseif($inventory instanceof ChestInventory && $action->getSourceItem()->count < $action->getTargetItem()->count){
+				}elseif($inventory instanceof ChestInventory){
 					/** @var ChestInventory[] $chestInventories */
 					$chestInventories = [];
 					if($inventory instanceof DoubleChestInventory){
