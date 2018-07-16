@@ -31,6 +31,7 @@ use kim\present\rewardbox\command\{
 };
 use kim\present\rewardbox\inventory\RewardBoxInventory;
 use kim\present\rewardbox\lang\PluginLang;
+use kim\present\rewardbox\listener\InventoryEventListener;
 use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\command\{
 	Command, CommandSender, PluginCommand
@@ -125,7 +126,8 @@ class RewardBox extends PluginBase{
 			}
 		}
 
-		//TODO: Register event listeners
+		//Register event listeners
+		$this->getServer()->getPluginManager()->registerEvents(new InventoryEventListener($this), $this);
 	}
 
 	/**
