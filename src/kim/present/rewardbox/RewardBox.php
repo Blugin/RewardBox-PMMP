@@ -45,6 +45,8 @@ class RewardBox extends PluginBase{
 	public const REMOVE = 1;
 	public const EDIT = 2;
 
+	public const TAG_PLUGIN = "RewardBox";
+
 	/** @var RewardBox */
 	private static $instance;
 
