@@ -159,7 +159,7 @@ class RewardBoxInventory extends CustomInventory{
 	 * @return CompoundTag
 	 */
 	public function nbtSerialize(string $tagName = "RewardBox") : CompoundTag{
-		$itemsTag = new ListTag(self::TAG_ITEMS, NBT::TAG_Compound);
+		$itemsTag = new ListTag(self::TAG_ITEMS, [],NBT::TAG_Compound);
 		for($slot = 0; $slot < 27; ++$slot){
 			$item = $this->getItem($slot);
 			if(!$item->isNull()){
