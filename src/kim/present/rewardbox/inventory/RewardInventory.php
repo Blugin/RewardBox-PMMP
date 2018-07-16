@@ -30,7 +30,6 @@ use kim\present\rewardbox\RewardBox;
 use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
@@ -41,13 +40,13 @@ class RewardInventory extends RewardBoxInventory{
 	/**
 	 * RewardBoxInventory constructor.
 	 *
-	 * @param Vector3 $holder
-	 * @param Player  $player
-	 * @param Item[]  $items        = []
-	 * @param string  $customName   = "RewardBox"
-	 * @param int     $creationTime = null
+	 * @param Position $holder
+	 * @param Player   $player
+	 * @param Item[]   $items        = []
+	 * @param string   $customName   = "RewardBox"
+	 * @param int      $creationTime = null
 	 */
-	public function __construct(Vector3 $holder, Player $player, array $items = [], string $customName = "RewardBox", int $creationTime = null){
+	public function __construct(Position $holder, Player $player, array $items = [], string $customName = "RewardBox", int $creationTime = null){
 		parent::__construct($holder, $items, $customName, $creationTime);
 		$this->player = $player;
 	}

@@ -29,6 +29,7 @@ namespace kim\present\rewardbox\inventory;
 use kim\present\rewardbox\RewardBox;
 use pocketmine\inventory\CustomInventory;
 use pocketmine\item\Item;
+use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\{
 	NBT, NetworkLittleEndianNBTStream
@@ -39,9 +40,11 @@ use pocketmine\nbt\tag\{
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
+use pocketmine\Server;
 use pocketmine\tile\Tile;
 
 class RewardBoxInventory extends CustomInventory{
+	public const TAG_WORLD = "World";
 	public const TAG_ITEMS = "Items";
 	public const TAG_CUSTOME_NAME = "CustomName";
 	public const TAG_CREATION_TIME = "CreationTime";
@@ -55,12 +58,12 @@ class RewardBoxInventory extends CustomInventory{
 	/**
 	 * RewardBoxInventory constructor.
 	 *
-	 * @param Vector3  $holder
+	 * @param Position $holder
 	 * @param Item[]   $items        = []
 	 * @param string   $customName   = "RewardBox"
 	 * @param null|int $creationTime = null
 	 */
-	public function __construct(Vector3 $holder, array $items = [], string $customName = "RewardBox", ?int $creationTime = null){
+	public function __construct(Position $holder, array $items = [], string $customName = "RewardBox", ?int $creationTime = null){
 		parent::__construct($holder, $items);
 		$this->customName = $customName;
 		if($creationTime === null){
@@ -112,6 +115,15 @@ class RewardBoxInventory extends CustomInventory{
 	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
+	 *
+	 * @return Position|Vector3
+	 */
+	public function getHolder(){
+		return $this->holder;
+	}
+
+	/**
 	 * @param Player $player
 	 *
 	 * @return string
@@ -158,6 +170,7 @@ class RewardBoxInventory extends CustomInventory{
 			new IntTag(Tile::TAG_X, $this->holder->x),
 			new IntTag(Tile::TAG_Y, $this->holder->y),
 			new IntTag(Tile::TAG_Z, $this->holder->z),
+			new StringTag(self::TAG_WORLD, $this->getHolder()->level->getFolderName()),
 			$itemsTag,
 			new StringTag(self::TAG_CUSTOME_NAME, $this->customName),
 			new IntTag(self::TAG_CREATION_TIME, $this->creationTime)
@@ -176,12 +189,12 @@ class RewardBoxInventory extends CustomInventory{
 		foreach($itemsTag as $i => $itemTag){
 			$items[$itemTag->getByte("Slot")] = Item::nbtDeserialize($itemTag);
 		}
-
 		return new RewardBoxInventory(
-			new Vector3(
+			new Position(
 				$tag->getInt(Tile::TAG_X),
 				$tag->getInt(Tile::TAG_Y),
-				$tag->getInt(Tile::TAG_Z)
+				$tag->getInt(Tile::TAG_Z),
+				Server::getInstance()->getLevelByName($tag->getString(self::TAG_WORLD))
 			),
 			$items,
 			$tag->getString(self::TAG_CUSTOME_NAME),
