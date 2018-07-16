@@ -26,6 +26,8 @@ declare(strict_types=1);
 
 namespace kim\present\rewardbox\command;
 
+use kim\present\rewardbox\act\child\CreateAct;
+use kim\present\rewardbox\act\PlayerAct;
 use kim\present\rewardbox\RewardBox;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
@@ -46,7 +48,8 @@ class CreateSubcommand extends Subcommand{
 	 */
 	public function execute(CommandSender $sender, array $args = []) : void{
 		if($sender instanceof Player){
-			//TODO: Register create act
+			PlayerAct::registerAct(new CreateAct($this->plugin, $sender));
+			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.rewardbox.create"));
 		}else{
 			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.generic.onlyPlayer"));
 		}

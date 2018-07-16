@@ -32,7 +32,7 @@ use kim\present\rewardbox\command\{
 use kim\present\rewardbox\inventory\RewardBoxInventory;
 use kim\present\rewardbox\lang\PluginLang;
 use kim\present\rewardbox\listener\{
-	BlockEventListener, InventoryEventListener
+	BlockEventListener, InventoryEventListener, PlayerEventListener
 };
 use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\command\{
@@ -148,6 +148,7 @@ class RewardBox extends PluginBase{
 		//Register event listeners
 		$this->getServer()->getPluginManager()->registerEvents(new BlockEventListener($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new InventoryEventListener($this), $this);
+		$this->getServer()->getPluginManager()->registerEvents(new PlayerEventListener($this), $this);
 	}
 
 	/**
@@ -301,7 +302,7 @@ class RewardBox extends PluginBase{
 	 * @return bool true if successful creation, else false
 	 */
 	public function createRewardBox(Chest $chest, string $customName = "RewardBox", int $creationTime = null) : bool{
-		if(!$this->getRewardBox($chest, true) === null){
+		if($this->getRewardBox($chest, true) === null){
 			$chestInventory = $chest->getInventory();
 			$this->rewardBoxs[HashUtils::positionHash($chest)] = new RewardBoxInventory($chest, $chestInventory->getContents(true), $customName, $creationTime);
 			$chestInventory->clearAll();

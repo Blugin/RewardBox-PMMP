@@ -24,34 +24,37 @@
 
 declare(strict_types=1);
 
-namespace kim\present\rewardbox\command;
+namespace kim\present\rewardbox\listener;
 
-use kim\present\rewardbox\act\child\RemoveAct;
 use kim\present\rewardbox\act\PlayerAct;
 use kim\present\rewardbox\RewardBox;
-use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerInteractEvent;
 
-class RemoveSubcommand extends Subcommand{
+class PlayerEventListener implements Listener{
+	/** @var RewardBox */
+	private $plugin;
+
 	/**
-	 * DisableSubcommand constructor.
+	 * InventoryEventListener constructor.
 	 *
 	 * @param RewardBox $plugin
 	 */
 	public function __construct(RewardBox $plugin){
-		parent::__construct($plugin, "remove");
+		$this->plugin = $plugin;
 	}
 
 	/**
-	 * @param CommandSender $sender
-	 * @param string[]      $args = []
+	 * @priority LOWEST
+	 *
+	 * @param PlayerInteractEvent $event
 	 */
-	public function execute(CommandSender $sender, array $args = []) : void{
-		if($sender instanceof Player){
-			PlayerAct::registerAct(new RemoveAct($this->plugin, $sender));
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.rewardbox.remove"));
-		}else{
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.generic.onlyPlayer"));
+	public function onPlayerInteractEvent(PlayerInteractEvent $event) : void{
+		if(!$event->isCancelled()){
+			$task = PlayerAct::getAct($event->getPlayer());
+			if($task !== null){
+				$task->onPlayerInteractEvent($event);
+			}
 		}
 	}
 }
