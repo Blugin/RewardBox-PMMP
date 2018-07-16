@@ -10,9 +10,6 @@ settings:
   #Set destructible of reward box
   chest-destructible: false
 
-  #Set accessible of reward box
-  chest-accessible: false
-
 
 command:
   #Name of main command

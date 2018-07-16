@@ -10,9 +10,6 @@ settings:
   #보상 상자 파괴를 허용할지 설정합니다
   chest-destructible: false
 
-  #보상 상자 접근을 허용할지 설정합니다
-  chest-accessible: false
-
 
 command:
   #메인 명령어의 이름
