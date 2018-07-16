@@ -272,23 +272,18 @@ class RewardBox extends PluginBase{
 
 	/**
 	 * @param Position $pos
+	 * @param bool     $checkSide = false
 	 *
 	 * @return bool true if exists and successful remove, else false
 	 */
-	public function removeRewardBox(Position $pos) : bool{
-		if(isset($this->rewardBoxs[$hash = HashUtils::positionHash($pos)])){
-			if($pos instanceof Chest){
-				$chestInventory = $pos->getInventory();
-			}else{
-				$chest = $pos->level->getTile($pos);
-				if($chest instanceof Chest){
-					$chestInventory = $chest->getInventory();
-				}else{
-					return true;
-				}
+	public function removeRewardBox(Position $pos, bool $checkSide = false) : bool{
+		$rewardBoxInventory = $this->getRewardBox($pos, $checkSide);
+		if($rewardBoxInventory !== null){
+			$chest = $pos->level->getTile($pos);
+			if($chest instanceof Chest){
+				$chest->getInventory()->setContents($rewardBoxInventory->getContents(true));
 			}
-			$chestInventory->setContents($this->rewardBoxs[$hash]->getContents(true));
-			unset($this->rewardBoxs[$hash]);
+			unset($this->rewardBoxs[HashUtils::positionHash($pos)]);
 			return true;
 		}
 		return false;
