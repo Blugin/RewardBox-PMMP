@@ -28,8 +28,13 @@ namespace kim\present\rewardbox\listener;
 
 use kim\present\rewardbox\inventory\RewardInventory;
 use kim\present\rewardbox\RewardBox;
-use pocketmine\event\inventory\InventoryTransactionEvent;
+use pocketmine\event\inventory\{
+	InventoryOpenEvent, InventoryTransactionEvent
+};
 use pocketmine\event\Listener;
+use pocketmine\inventory\{
+	ChestInventory, DoubleChestInventory
+};
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 
 class InventoryEventListener implements Listener{
@@ -55,6 +60,31 @@ class InventoryEventListener implements Listener{
 			if($action instanceof SlotChangeAction){
 				$inventory = $action->getInventory();
 				if($inventory instanceof RewardInventory && $action->getSourceItem()->count < $action->getTargetItem()->count){
+					$event->setCancelled();
+					return;
+				}
+			}
+		}
+	}
+
+	/**
+	 * @priority LOWEST
+	 *
+	 * @param InventoryOpenEvent $event
+	 */
+	public function onInventoryOpenEvent(InventoryOpenEvent $event) : void{
+		$inventory = $event->getInventory();
+		if($inventory instanceof ChestInventory){
+			/** @var ChestInventory[] $chestInventories */
+			$chestInventories = [];
+			if($inventory instanceof DoubleChestInventory){
+				$chestInventories[] = $inventory->getLeftSide();
+				$chestInventories[] = $inventory->getRightSide();
+			}else{
+				$chestInventories[] = $inventory;
+			}
+			foreach($chestInventories as $key => $chestInventory){
+				if($this->plugin->getRewardBox($chestInventory->getHolder()) !== null){
 					$event->setCancelled();
 					return;
 				}
