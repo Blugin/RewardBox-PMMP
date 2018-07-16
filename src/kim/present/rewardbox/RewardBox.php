@@ -38,6 +38,9 @@ use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\command\{
 	Command, CommandSender, PluginCommand
 };
+use pocketmine\inventory\{
+	DoubleChestInventory
+};
 use pocketmine\level\Position;
 use pocketmine\permission\Permission;
 use pocketmine\plugin\PluginBase;
@@ -218,11 +221,33 @@ class RewardBox extends PluginBase{
 
 	/**
 	 * @param Position $pos
+	 * @param bool     $checkSide = false
 	 *
 	 * @return RewardBoxInventory|null
 	 */
-	public function getRewardBox(Position $pos) : ?RewardBoxInventory{
-		return $this->rewardBoxs[HashUtils::positionHash($pos)] ?? null;
+	public function getRewardBox(Position $pos, bool $checkSide = false) : ?RewardBoxInventory{
+		if(isset($this->rewardBoxs[$hash = HashUtils::positionHash($pos)])){
+			return $this->rewardBoxs[$hash];
+		}elseif($checkSide){
+			if($pos instanceof Chest){
+				$inventory = $pos->getInventory();
+			}else{
+				$chest = $pos->level->getTile($pos);
+				if($chest instanceof Chest){
+					$inventory = $chest->getInventory();
+				}else{
+					return null;
+				}
+			}
+			if($inventory instanceof DoubleChestInventory){
+				foreach([$inventory->getLeftSide(), $inventory->getRightSide()] as $key => $chestInventory){
+					if(isset($this->rewardBoxs[$hash = HashUtils::positionHash($chestInventory->getHolder())])){
+						return $this->rewardBoxs[$hash];
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
