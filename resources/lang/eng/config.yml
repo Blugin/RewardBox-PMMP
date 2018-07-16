@@ -7,9 +7,6 @@ settings:
   #Available: eng, kor
   language: "eng"
 
-  #Set destructible of reward box
-  chest-destructible: false
-
 
 command:
   #Name of main command

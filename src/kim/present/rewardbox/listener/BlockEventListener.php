@@ -49,7 +49,7 @@ class BlockEventListener implements Listener{
 	 * @param BlockBreakEvent $event
 	 */
 	public function onBlockBreakEvent(BlockBreakEvent $event) : void{
-		if($this->plugin->getConfig()->getNested("settings.chest-destructible", false) && $this->plugin->getRewardBox($event->getBlock()) !== null){
+		if($this->plugin->getRewardBox($event->getBlock()) !== null){
 			$event->setCancelled();
 		}
 	}
