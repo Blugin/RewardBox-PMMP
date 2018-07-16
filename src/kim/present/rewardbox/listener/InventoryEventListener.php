@@ -28,6 +28,7 @@ namespace kim\present\rewardbox\listener;
 
 use kim\present\rewardbox\inventory\RewardInventory;
 use kim\present\rewardbox\RewardBox;
+use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\event\inventory\{
 	InventoryOpenEvent, InventoryTransactionEvent
 };
@@ -77,7 +78,15 @@ class InventoryEventListener implements Listener{
 	public function onInventoryOpenEvent(InventoryOpenEvent $event) : void{
 		$inventory = $event->getInventory();
 		if($inventory instanceof ChestInventory){
-			if($this->plugin->getRewardBox($inventory->getHolder(), true) !== null){
+			$rewardBoxInventory = $this->plugin->getRewardBox($inventory->getHolder(), true);
+			if($rewardBoxInventory !== null){
+				$player = $event->getPlayer();
+				$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($inventory->getHolder()));
+				if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
+					$player->addWindow($rewardInventory);
+				}else{
+					$player->addWindow(RewardInventory::fromRewardBox($player, $rewardBoxInventory));
+				}
 				$event->setCancelled();
 			}
 		}
