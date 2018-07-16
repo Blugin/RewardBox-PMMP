@@ -84,7 +84,7 @@ class RewardBoxInventory extends CustomInventory{
 			new IntTag(TILE::TAG_X, $this->holder->x),
 			new IntTag(TILE::TAG_Y, $this->holder->y),
 			new IntTag(TILE::TAG_Z, $this->holder->z),
-			new StringTag(Chest::TAG_CUSTOM_NAME, $this->getCustomName($who))
+			new StringTag(Chest::TAG_CUSTOM_NAME, $this->getCustomNameTranslate($who))
 		]));
 		$who->sendDataPacket($pk);
 
@@ -122,11 +122,18 @@ class RewardBoxInventory extends CustomInventory{
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getCustomName() : string{
+		return $this->customName;
+	}
+
+	/**
 	 * @param Player $player
 	 *
 	 * @return string
 	 */
-	public function getCustomName(Player $player = null) : string{
+	public function getCustomNameTranslate(Player $player = null) : string{
 		return RewardBox::getInstance()->getLanguage()->translateString("chest.name.edit", [$this->customName, $player !== null ? $player->getName() : ""]);
 	}
 
