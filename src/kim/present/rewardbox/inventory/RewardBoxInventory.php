@@ -41,12 +41,11 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\tile\Chest;
 use pocketmine\tile\Tile;
 
 class RewardBoxInventory extends CustomInventory{
 	public const TAG_WORLD = "World";
-	public const TAG_ITEMS = "Items";
-	public const TAG_CUSTOME_NAME = "CustomName";
 	public const TAG_CREATION_TIME = "CreationTime";
 
 	/** @var string */
@@ -81,14 +80,13 @@ class RewardBoxInventory extends CustomInventory{
 		$pk->y = $this->holder->y;
 		$pk->z = $this->holder->z;
 		$pk->namedtag = (new NetworkLittleEndianNBTStream())->write(new CompoundTag("", [
-			new StringTag("id", "Chest"),
-			new IntTag("x", $this->holder->x),
-			new IntTag("y", $this->holder->y),
-			new IntTag("z", $this->holder->z),
-			new StringTag("CustomName", $this->getCustomName($who))
+			new StringTag(TILE::TAG_ID, TILE::CHEST),
+			new IntTag(TILE::TAG_X, $this->holder->x),
+			new IntTag(TILE::TAG_Y, $this->holder->y),
+			new IntTag(TILE::TAG_Z, $this->holder->z),
+			new StringTag(Chest::TAG_CUSTOM_NAME, $this->getCustomName($who))
 		]));
 		$who->sendDataPacket($pk);
-		$this->sendContents($who);
 
 		parent::onOpen($who);
 	}
@@ -159,7 +157,7 @@ class RewardBoxInventory extends CustomInventory{
 	 * @return CompoundTag
 	 */
 	public function nbtSerialize(string $tagName = "RewardBox") : CompoundTag{
-		$itemsTag = new ListTag(self::TAG_ITEMS, [],NBT::TAG_Compound);
+		$itemsTag = new ListTag(Chest::TAG_ITEMS, [], NBT::TAG_Compound);
 		for($slot = 0; $slot < 27; ++$slot){
 			$item = $this->getItem($slot);
 			if(!$item->isNull()){
@@ -172,7 +170,7 @@ class RewardBoxInventory extends CustomInventory{
 			new IntTag(Tile::TAG_Z, $this->holder->z),
 			new StringTag(self::TAG_WORLD, $this->getHolder()->level->getFolderName()),
 			$itemsTag,
-			new StringTag(self::TAG_CUSTOME_NAME, $this->customName),
+			new StringTag(Chest::TAG_CUSTOM_NAME, $this->customName),
 			new IntTag(self::TAG_CREATION_TIME, $this->creationTime)
 		]);
 	}
@@ -183,7 +181,7 @@ class RewardBoxInventory extends CustomInventory{
 	 * @return RewardBoxInventory
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : RewardBoxInventory{
-		$itemsTag = $tag->getListTag(self::TAG_ITEMS);
+		$itemsTag = $tag->getListTag(Chest::TAG_ITEMS);
 		$items = [];
 		/** @var CompoundTag $itemTag */
 		foreach($itemsTag as $i => $itemTag){
@@ -197,7 +195,7 @@ class RewardBoxInventory extends CustomInventory{
 				Server::getInstance()->getLevelByName($tag->getString(self::TAG_WORLD))
 			),
 			$items,
-			$tag->getString(self::TAG_CUSTOME_NAME),
+			$tag->getString(Chest::TAG_CUSTOM_NAME),
 			$tag->getInt(self::TAG_CREATION_TIME)
 		);
 	}
