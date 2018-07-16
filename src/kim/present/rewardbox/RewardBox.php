@@ -244,7 +244,9 @@ class RewardBox extends PluginBase{
 	 */
 	public function createRewardBox(Chest $chest, string $customName = "RewardBox", int $creationTime = null) : bool{
 		if(!isset($this->rewardBoxs[$hash = HashUtils::positionHash($chest)])){
-			$this->rewardBoxs[$hash] = new RewardBoxInventory($chest, $chest->getInventory()->getContents(true), $customName, $creationTime);
+			$chestInventory = $chest->getInventory();
+			$this->rewardBoxs[$hash] = new RewardBoxInventory($chest, $chestInventory->getContents(true), $customName, $creationTime);
+			$chestInventory->clearAll();
 			return true;
 		}
 		return false;
