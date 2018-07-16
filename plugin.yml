@@ -1,0 +1,24 @@
+---
+name: RewardBox
+main: kim\present\rewardbox\RewardBox
+version: 0.0.1-DEV
+api: [3.0.0, 4.0.0]
+author: PresentKim
+website: https://github.com/PresentKim/RewardBox-PMMP
+description: Make chest to individual reward box!
+
+permissions:
+  rewardbox.cmd:
+    description: RewardBox command
+    default: op
+    children:
+      rewardbox.cmd.create:
+        description: RewardBox command - create
+        default: op
+      rewardbox.cmd.remove:
+        description: RewardBox command - remove
+        default: op
+      rewardbox.cmd.edit:
+        description: RewardBox command - edit
+        default: op
+...
