@@ -27,7 +27,9 @@ declare(strict_types=1);
 namespace kim\present\rewardbox\listener;
 
 use kim\present\rewardbox\act\PlayerAct;
+use kim\present\rewardbox\inventory\RewardInventory;
 use kim\present\rewardbox\RewardBox;
+use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
 
@@ -54,6 +56,18 @@ class PlayerEventListener implements Listener{
 			$task = PlayerAct::getAct($event->getPlayer());
 			if($task !== null){
 				$task->onPlayerInteractEvent($event);
+			}elseif($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+				$rewardBoxInventory = $this->plugin->getRewardBox($event->getBlock(), true);
+				if($rewardBoxInventory !== null){
+					$player = $event->getPlayer();
+					$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
+					if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
+						$player->addWindow($rewardInventory);
+					}else{
+						$player->addWindow(RewardInventory::fromRewardBox($player, $rewardBoxInventory));
+					}
+					$event->setCancelled();
+				}
 			}
 		}
 	}
