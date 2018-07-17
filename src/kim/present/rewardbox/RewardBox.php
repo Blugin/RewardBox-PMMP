@@ -283,7 +283,7 @@ class RewardBox extends PluginBase{
 			if($chest instanceof Chest){
 				$chest->getInventory()->setContents($rewardBoxInventory->getContents(true));
 			}
-			unset($this->rewardBoxs[HashUtils::positionHash($pos)]);
+			unset($this->rewardBoxs[HashUtils::positionHash($rewardBoxInventory->getHolder())]);
 			return true;
 		}
 		return false;
