@@ -96,6 +96,27 @@ class RewardBoxInventory extends CustomInventory{
 	}
 
 	/**
+	 * @param Player $who
+	 */
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
+
+		$chest = $who->getLevel()->getTile($this->holder);
+		if($chest instanceof Chest){
+			$namedTag = $chest->getSpawnCompound();
+			if(!$namedTag->hasTag(Chest::TAG_CUSTOM_NAME)){
+				$namedTag->setString(Chest::TAG_CUSTOM_NAME, "%container.chest" . ($chest->isPaired() ? "Double" : ""));
+			}
+			$pk = new BlockEntityDataPacket();
+			$pk->x = $this->holder->x;
+			$pk->y = $this->holder->y;
+			$pk->z = $this->holder->z;
+			$pk->namedtag = (new NetworkLittleEndianNBTStream())->write($namedTag);
+			$who->sendDataPacket($pk);
+		}
+	}
+
+	/**
 	 * @Override for prevent inventory size error in client
 	 *
 	 * @param Player|Player[] $target
