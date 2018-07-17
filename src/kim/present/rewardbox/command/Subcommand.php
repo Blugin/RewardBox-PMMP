@@ -30,11 +30,11 @@ use kim\present\rewardbox\RewardBox;
 use pocketmine\command\CommandSender;
 
 abstract class Subcommand{
+	public const LABEL = "";
+
 	/** @var RewardBox */
 	protected $plugin;
 
-	/** @var string */
-	protected $label;
 
 	/** @var string */
 	private $name;
@@ -49,12 +49,11 @@ abstract class Subcommand{
 	 * Subcommand constructor.
 	 *
 	 * @param RewardBox $plugin
-	 * @param string $label
 	 */
-	public function __construct(RewardBox $plugin, string $label){
+	public function __construct(RewardBox $plugin){
 		$this->plugin = $plugin;
-		$this->label = $label;
 
+		$label = $this->getLabel();
 		$config = $plugin->getConfig();
 		$this->name = $config->getNested("command.children.{$label}.name");
 		$this->aliases = $config->getNested("command.children.{$label}.aliases");
@@ -93,7 +92,7 @@ abstract class Subcommand{
 	 * @return string
 	 */
 	public function getLabel() : string{
-		return $this->label;
+		return $this::LABEL;
 	}
 
 	/**

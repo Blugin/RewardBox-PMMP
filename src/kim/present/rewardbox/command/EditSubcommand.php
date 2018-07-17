@@ -28,19 +28,11 @@ namespace kim\present\rewardbox\command;
 
 use kim\present\rewardbox\act\child\EditAct;
 use kim\present\rewardbox\act\PlayerAct;
-use kim\present\rewardbox\RewardBox;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
 
 class EditSubcommand extends Subcommand{
-	/**
-	 * EditSubcommand constructor.
-	 *
-	 * @param RewardBox $plugin
-	 */
-	public function __construct(RewardBox $plugin){
-		parent::__construct($plugin, "edit");
-	}
+	public const LABEL = "edit";
 
 	/**
 	 * @param CommandSender $sender

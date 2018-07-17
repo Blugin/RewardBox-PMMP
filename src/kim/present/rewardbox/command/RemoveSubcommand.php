@@ -28,19 +28,11 @@ namespace kim\present\rewardbox\command;
 
 use kim\present\rewardbox\act\child\RemoveAct;
 use kim\present\rewardbox\act\PlayerAct;
-use kim\present\rewardbox\RewardBox;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
 
 class RemoveSubcommand extends Subcommand{
-	/**
-	 * DisableSubcommand constructor.
-	 *
-	 * @param RewardBox $plugin
-	 */
-	public function __construct(RewardBox $plugin){
-		parent::__construct($plugin, "remove");
-	}
+	public const LABEL = "remove";
 
 	/**
 	 * @param CommandSender $sender
