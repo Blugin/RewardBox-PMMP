@@ -37,8 +37,12 @@ use pocketmine\nbt\{
 use pocketmine\nbt\tag\{
 	CompoundTag, IntTag, ListTag, StringTag
 };
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
+use pocketmine\network\mcpe\protocol\{
+	BlockEntityDataPacket, InventoryContentPacket
+};
+use pocketmine\network\mcpe\protocol\types\{
+	ContainerIds, WindowTypes
+};
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\tile\Chest;
@@ -92,6 +96,33 @@ class RewardBoxInventory extends CustomInventory{
 	}
 
 	/**
+	 * @Override for prevent inventory size error in client
+	 *
+	 * @param Player|Player[] $target
+	 */
+	public function sendContents($target) : void{
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
+		$pk = new InventoryContentPacket();
+		$pk->items = $this->getContents(true);
+		$chest = $this->getHolder()->level->getTile($this->holder);
+		if($chest instanceof Chest && !$chest->isPaired()){
+			$pk->items = array_slice($pk->items, 0, 27);
+		}
+
+		foreach($target as $player){
+			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
+				$this->close($player);
+				continue;
+			}
+			$pk->windowId = $id;
+			$player->dataPacket($pk);
+		}
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getName() : string{
@@ -102,7 +133,7 @@ class RewardBoxInventory extends CustomInventory{
 	 * @return int
 	 */
 	public function getDefaultSize() : int{
-		return 27;
+		return 54;
 	}
 
 	/**
@@ -165,7 +196,7 @@ class RewardBoxInventory extends CustomInventory{
 	 */
 	public function nbtSerialize(string $tagName = "RewardBox") : CompoundTag{
 		$itemsTag = new ListTag(Chest::TAG_ITEMS, [], NBT::TAG_Compound);
-		for($slot = 0; $slot < 27; ++$slot){
+		for($slot = 0; $slot < $this->getSize(); ++$slot){
 			$item = $this->getItem($slot);
 			if(!$item->isNull()){
 				$itemsTag->push($item->nbtSerialize($slot));
