@@ -62,6 +62,7 @@ class PlayerEventListener implements Listener{
 					$player = $event->getPlayer();
 					$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
 					if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
+						$rewardInventory->setCustomName($rewardBoxInventory->getCustomName());
 						$player->addWindow($rewardInventory);
 					}else{
 						$player->addWindow(RewardInventory::fromRewardBox($player, $rewardBoxInventory));
