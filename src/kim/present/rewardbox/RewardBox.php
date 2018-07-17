@@ -49,10 +49,10 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\tile\Chest;
 
 class RewardBox extends PluginBase{
-	public const CREATE = 0;
-	public const REMOVE = 1;
-	public const EDIT = 2;
-	public const NAME = 3;
+	public const SUBCOMMAND_CREATE = 0;
+	public const SUBCOMMAND_REMOVE = 1;
+	public const SUBCOMMAND_EDIT = 2;
+	public const SUBCOMMAND_NAME = 3;
 
 	public const TAG_PLUGIN = "RewardBox";
 
@@ -127,10 +127,10 @@ class RewardBox extends PluginBase{
 
 		//Register subcommands
 		$this->subcommands = [
-			self::CREATE => new CreateSubcommand($this),
-			self::REMOVE => new RemoveSubcommand($this),
-			self::EDIT => new EditSubcommand($this),
-			self::NAME => new NameSubcommand($this)
+			self::SUBCOMMAND_CREATE => new CreateSubcommand($this),
+			self::SUBCOMMAND_REMOVE => new RemoveSubcommand($this),
+			self::SUBCOMMAND_EDIT => new EditSubcommand($this),
+			self::SUBCOMMAND_NAME => new NameSubcommand($this)
 		];
 
 		//Load permission's default value from config
