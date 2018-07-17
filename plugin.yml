@@ -21,4 +21,7 @@ permissions:
       rewardbox.cmd.edit:
         description: RewardBox command - edit
         default: op
+      rewardbox.cmd.name:
+        description: RewardBox command - name
+        default: op
 ...

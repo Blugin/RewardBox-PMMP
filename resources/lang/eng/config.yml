@@ -29,6 +29,9 @@ command:
     edit:
       name: "Edit"
       aliases: ["e"]
+    name:
+      name: "Name"
+      aliases: ["n"]
 
 
 permission:
@@ -42,3 +45,4 @@ permission:
     create: "op"
     enable: "op"
     edit: "op"
+    name: "op"

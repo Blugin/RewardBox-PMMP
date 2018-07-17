@@ -29,6 +29,9 @@ command:
     edit:
       name: "Edit"
       aliases: ["e"]
+    name:
+      name: "Name"
+      aliases: ["n"]
 
 
 permission:

@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace kim\present\rewardbox;
 
 use kim\present\rewardbox\command\{
-	CreateSubcommand, EditSubcommand, RemoveSubcommand, Subcommand
+	CreateSubcommand, EditSubcommand, NameSubcommand, RemoveSubcommand, Subcommand
 };
 use kim\present\rewardbox\inventory\RewardBoxInventory;
 use kim\present\rewardbox\lang\PluginLang;
@@ -52,6 +52,7 @@ class RewardBox extends PluginBase{
 	public const CREATE = 0;
 	public const REMOVE = 1;
 	public const EDIT = 2;
+	public const NAME = 3;
 
 	public const TAG_PLUGIN = "RewardBox";
 
@@ -128,7 +129,8 @@ class RewardBox extends PluginBase{
 		$this->subcommands = [
 			self::CREATE => new CreateSubcommand($this),
 			self::REMOVE => new RemoveSubcommand($this),
-			self::EDIT => new EditSubcommand($this)
+			self::EDIT => new EditSubcommand($this),
+			self::NAME => new NameSubcommand($this)
 		];
 
 		//Load permission's default value from config
