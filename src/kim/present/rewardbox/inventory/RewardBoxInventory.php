@@ -99,8 +99,6 @@ class RewardBoxInventory extends CustomInventory{
 	 * @param Player $who
 	 */
 	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
 		$chest = $who->getLevel()->getTile($this->holder);
 		if($chest instanceof Chest){
 			$namedTag = $chest->getSpawnCompound();
@@ -114,6 +112,8 @@ class RewardBoxInventory extends CustomInventory{
 			$pk->namedtag = (new NetworkLittleEndianNBTStream())->write($namedTag);
 			$who->sendDataPacket($pk);
 		}
+
+		parent::onClose($who);
 	}
 
 	/**
