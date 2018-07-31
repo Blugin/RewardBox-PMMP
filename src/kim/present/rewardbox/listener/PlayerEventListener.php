@@ -52,14 +52,14 @@ class PlayerEventListener implements Listener{
 	 * @param PlayerInteractEvent $event
 	 */
 	public function onPlayerInteractEvent(PlayerInteractEvent $event) : void{
+		$player = $event->getPlayer();
 		if(!$event->isCancelled()){
-			$task = PlayerAct::getAct($event->getPlayer());
+			$task = PlayerAct::getAct($player);
 			if($task !== null){
 				$task->onPlayerInteractEvent($event);
-			}elseif($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+			}elseif(!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK){
 				$rewardBoxInventory = $this->plugin->getRewardBox($event->getBlock(), true);
 				if($rewardBoxInventory !== null){
-					$player = $event->getPlayer();
 					$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
 					if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
 						$rewardInventory->setCustomName($rewardBoxInventory->getCustomName());
