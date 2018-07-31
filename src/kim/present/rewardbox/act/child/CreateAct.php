@@ -23,6 +23,7 @@ class CreateAct extends PlayerAct{
 		parent::__construct($plugin, $player);
 		$this->name = $name;
 	}
+
 	/**
 	 * @param PlayerInteractEvent $event
 	 */
