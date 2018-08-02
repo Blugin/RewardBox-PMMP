@@ -44,7 +44,9 @@ use pocketmine\inventory\{
 use pocketmine\level\Position;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\permission\Permission;
+use pocketmine\permission\{
+	Permission, PermissionManager
+};
 use pocketmine\plugin\PluginBase;
 use pocketmine\tile\Chest;
 
@@ -134,7 +136,7 @@ class RewardBox extends PluginBase{
 		];
 
 		//Load permission's default value from config
-		$permissions = $this->getServer()->getPluginManager()->getPermissions();
+		$permissions = PermissionManager::getInstance()->getPermissions();
 		$defaultValue = $config->getNested("permission.main");
 		if($defaultValue !== null){
 			$permissions["rewardbox.cmd"]->setDefault(Permission::getByName($config->getNested("permission.main")));
