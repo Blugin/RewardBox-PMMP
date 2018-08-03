@@ -41,13 +41,13 @@ class NameSubcommand extends Subcommand{
 	public function execute(CommandSender $sender, array $args = []) : void{
 		if($sender instanceof Player){
 			if(empty($args)){
-				$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.rewardbox.name.usage"));
+				$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name.usage"));
 			}else{
 				PlayerAct::registerAct(new NameAct($this->plugin, $sender, implode(" ", $args)));
-				$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.rewardbox.name"));
+				$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name"));
 			}
 		}else{
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.generic.onlyPlayer"));
+			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));
 		}
 	}
 }

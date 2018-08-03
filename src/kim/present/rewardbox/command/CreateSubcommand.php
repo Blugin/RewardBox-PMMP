@@ -41,9 +41,9 @@ class CreateSubcommand extends Subcommand{
 	public function execute(CommandSender $sender, array $args = []) : void{
 		if($sender instanceof Player){
 			PlayerAct::registerAct(new CreateAct($this->plugin, $sender, empty($args) ? "RewardBox" : implode(" ", $args)));
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.rewardbox.create"));
+			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.create"));
 		}else{
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.generic.onlyPlayer"));
+			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));
 		}
 	}
 }

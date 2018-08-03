@@ -103,7 +103,7 @@ class RewardBox extends PluginBase{
 
 		//Load language file
 		$this->language = new PluginLang($this, $config->getNested("settings.language"));
-		$this->getLogger()->info($this->language->translateString("language.selected", [$this->language->getName(), $this->language->getLang()]));
+		$this->getLogger()->info($this->language->translate("language.selected", [$this->language->getName(), $this->language->getLang()]));
 
 		//Load reward boxs data
 		$this->rewardBoxs = [];
@@ -123,8 +123,8 @@ class RewardBox extends PluginBase{
 		$this->command = new PluginCommand($config->getNested("command.name"), $this);
 		$this->command->setPermission("rewardbox.cmd");
 		$this->command->setAliases($config->getNested("command.aliases"));
-		$this->command->setUsage($this->language->translateString("commands.rewardbox.usage"));
-		$this->command->setDescription($this->language->translateString("commands.rewardbox.description"));
+		$this->command->setUsage($this->language->translate("commands.rewardbox.usage"));
+		$this->command->setDescription($this->language->translate("commands.rewardbox.description"));
 		$this->getServer()->getCommandMap()->register($this->getName(), $this->command);
 
 		//Register subcommands

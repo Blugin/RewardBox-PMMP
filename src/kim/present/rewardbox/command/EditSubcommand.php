@@ -41,9 +41,9 @@ class EditSubcommand extends Subcommand{
 	public function execute(CommandSender $sender, array $args = []) : void{
 		if($sender instanceof Player){
 			PlayerAct::registerAct(new EditAct($this->plugin, $sender));
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.rewardbox.edit"));
+			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.edit"));
 		}else{
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.generic.onlyPlayer"));
+			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));
 		}
 	}
 }

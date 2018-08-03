@@ -19,10 +19,10 @@ class EditAct extends PlayerAct{
 				if($rewardBoxInventory !== null){
 					$player->addWindow($rewardBoxInventory);
 				}else{
-					$player->sendMessage($this->plugin->getLanguage()->translateString("acts.generic.notRewardBox"));
+					$player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
 				}
 			}else{
-				$player->sendMessage($this->plugin->getLanguage()->translateString("acts.generic.notChest"));
+				$player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notChest"));
 			}
 
 			$event->setCancelled();

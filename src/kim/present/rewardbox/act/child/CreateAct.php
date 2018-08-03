@@ -33,12 +33,12 @@ class CreateAct extends PlayerAct{
 			$chest = $player->level->getTile($event->getBlock());
 			if($chest instanceof Chest){
 				if($this->plugin->createRewardBox($chest, $this->name)){
-					$player->sendMessage($this->plugin->getLanguage()->translateString("acts.create.success"));
+					$player->sendMessage($this->plugin->getLanguage()->translate("acts.create.success"));
 				}else{
-					$player->sendMessage($this->plugin->getLanguage()->translateString("acts.create.already"));
+					$player->sendMessage($this->plugin->getLanguage()->translate("acts.create.already"));
 				}
 			}else{
-				$player->sendMessage($this->plugin->getLanguage()->translateString("acts.generic.notChest"));
+				$player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notChest"));
 			}
 
 			$event->setCancelled();

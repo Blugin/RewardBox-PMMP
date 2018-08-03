@@ -35,12 +35,12 @@ class NameAct extends PlayerAct{
 				$rewardBoxInventory = $this->plugin->getRewardBox($chest, true);
 				if($rewardBoxInventory !== null){
 					$rewardBoxInventory->setCustomName($this->name);
-					$player->sendMessage($this->plugin->getLanguage()->translateString("acts.name.success", [$this->name]));
+					$player->sendMessage($this->plugin->getLanguage()->translate("acts.name.success", [$this->name]));
 				}else{
-					$player->sendMessage($this->plugin->getLanguage()->translateString("acts.generic.notRewardBox"));
+					$player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
 				}
 			}else{
-				$player->sendMessage($this->plugin->getLanguage()->translateString("acts.generic.notChest"));
+				$player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notChest"));
 			}
 
 			$event->setCancelled();

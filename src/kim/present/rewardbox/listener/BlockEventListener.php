@@ -50,7 +50,7 @@ class BlockEventListener implements Listener{
 	 */
 	public function onBlockBreakEvent(BlockBreakEvent $event) : void{
 		if($this->plugin->getRewardBox($event->getBlock()) !== null){
-			$event->getPlayer()->sendMessage($this->plugin->getLanguage()->translateString("prevent.destroy"));
+			$event->getPlayer()->sendMessage($this->plugin->getLanguage()->translate("prevent.destroy"));
 			$event->setCancelled();
 		}
 	}

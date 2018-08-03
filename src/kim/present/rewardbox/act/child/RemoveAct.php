@@ -16,12 +16,12 @@ class RemoveAct extends PlayerAct{
 			$chest = $player->level->getTile($event->getBlock());
 			if($chest instanceof Chest){
 				if($this->plugin->removeRewardBox($chest, true)){
-					$player->sendMessage($this->plugin->getLanguage()->translateString("acts.remove.success"));
+					$player->sendMessage($this->plugin->getLanguage()->translate("acts.remove.success"));
 				}else{
-					$player->sendMessage($this->plugin->getLanguage()->translateString("acts.generic.notRewardBox"));
+					$player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
 				}
 			}else{
-				$player->sendMessage($this->plugin->getLanguage()->translateString("acts.generic.notChest"));
+				$player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notChest"));
 			}
 
 			$event->setCancelled();

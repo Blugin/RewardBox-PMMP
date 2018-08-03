@@ -78,7 +78,7 @@ abstract class Subcommand{
 		if($sender->hasPermission($this->permission)){
 			$this->execute($sender, $args);
 		}else{
-			$sender->sendMessage($this->plugin->getLanguage()->translateString("commands.generic.permission"));
+			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.permission"));
 		}
 	}
 

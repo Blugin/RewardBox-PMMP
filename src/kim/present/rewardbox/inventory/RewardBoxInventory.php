@@ -186,7 +186,7 @@ class RewardBoxInventory extends CustomInventory{
 	 * @return string
 	 */
 	public function getCustomNameTranslate(Player $player = null) : string{
-		return RewardBox::getInstance()->getLanguage()->translateString("chest.name.edit", [$this->customName, $player !== null ? $player->getName() : ""]);
+		return RewardBox::getInstance()->getLanguage()->translate("chest.name.edit", [$this->customName, $player !== null ? $player->getName() : ""]);
 	}
 
 	/**
