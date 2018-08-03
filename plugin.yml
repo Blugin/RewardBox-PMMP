@@ -2,7 +2,7 @@
 name: RewardBox
 main: kim\present\rewardbox\RewardBox
 version: 1.0.2
-api: [4.0.0]
+api: [3.0.0, 4.0.0]
 author: PresentKim
 website: https://github.com/PresentKim/RewardBox-PMMP
 description: Make chest to individual reward box!
