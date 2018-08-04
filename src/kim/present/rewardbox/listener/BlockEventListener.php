@@ -26,9 +26,13 @@ declare(strict_types=1);
 
 namespace kim\present\rewardbox\listener;
 
+use kim\present\rewardbox\act\PlayerAct;
+use kim\present\rewardbox\inventory\RewardInventory;
 use kim\present\rewardbox\RewardBox;
+use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerInteractEvent;
 
 class BlockEventListener implements Listener{
 	/** @var RewardBox */
@@ -52,6 +56,33 @@ class BlockEventListener implements Listener{
 		if($this->plugin->getRewardBox($event->getBlock()) !== null){
 			$event->getPlayer()->sendMessage($this->plugin->getLanguage()->translate("prevent.destroy"));
 			$event->setCancelled();
+		}
+	}
+
+	/**
+	 * @priority LOWEST
+	 *
+	 * @param PlayerInteractEvent $event
+	 */
+	public function onPlayerInteractEvent(PlayerInteractEvent $event) : void{
+		$player = $event->getPlayer();
+		if(!$event->isCancelled()){
+			$task = PlayerAct::getAct($player);
+			if($task !== null){
+				$task->onPlayerInteractEvent($event);
+			}elseif(!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+				$rewardBoxInventory = $this->plugin->getRewardBox($event->getBlock(), true);
+				if($rewardBoxInventory !== null){
+					$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
+					if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
+						$rewardInventory->setCustomName($rewardBoxInventory->getCustomName());
+						$player->addWindow($rewardInventory);
+					}else{
+						$player->addWindow(RewardInventory::fromRewardBox($player, $rewardBoxInventory));
+					}
+					$event->setCancelled();
+				}
+			}
 		}
 	}
 }

@@ -152,7 +152,6 @@ class RewardBox extends PluginBase{
 		//Register event listeners
 		$this->getServer()->getPluginManager()->registerEvents(new BlockEventListener($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new InventoryEventListener($this), $this);
-		$this->getServer()->getPluginManager()->registerEvents(new PlayerEventListener($this), $this);
 	}
 
 	/**
