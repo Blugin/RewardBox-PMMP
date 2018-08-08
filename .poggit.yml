@@ -1,0 +1,10 @@
+--- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/PresentKim/RewardBox-PMMP
+
+branches:
+- master
+
+projects:
+  RewardBox:
+    path: ""
+    icon: assets/icon/512x512.png
+...
