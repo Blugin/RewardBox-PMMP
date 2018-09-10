@@ -92,7 +92,7 @@ abstract class Subcommand{
 	 * @return string
 	 */
 	public function getLabel() : string{
-		return $this::LABEL;
+		return static::LABEL;
 	}
 
 	/**
