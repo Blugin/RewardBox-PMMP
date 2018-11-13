@@ -33,7 +33,6 @@ abstract class Subcommand{
 	/** @var RewardBox */
 	protected $plugin;
 
-
 	/** @var string */
 	private $name;
 
@@ -57,7 +56,6 @@ abstract class Subcommand{
 		$this->aliases = $config->getNested("command.children.{$label}.aliases");
 		$this->permission = "rewardbox.cmd.{$label}";
 	}
-
 
 	/**
 	 * @param string $label
