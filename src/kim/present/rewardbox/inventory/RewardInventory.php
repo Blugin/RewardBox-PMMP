@@ -28,6 +28,7 @@ use kim\present\rewardbox\RewardBox;
 use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
+use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
@@ -54,20 +55,7 @@ class RewardInventory extends RewardBoxInventory{
 	 */
 	public function onClose(Player $who) : void{
 		parent::onClose($who);
-
-		$pluginTag = $who->namedtag->getCompoundTag(RewardBox::TAG_PLUGIN);
-		if($pluginTag === null){
-			$pluginTag = new CompoundTag(RewardBox::TAG_PLUGIN);
-		}
-
-		if($this->holder instanceof Position){
-			$pos = $this->holder;
-		}else{
-			$pos = Position::fromObject($this->holder, $who->level);
-		}
-
-		$pluginTag->setTag($this->nbtSerialize(HashUtils::positionHash($pos)));
-		$who->namedtag->setTag($pluginTag);
+		$this->writePlayerData($who);
 	}
 
 	/**
@@ -88,18 +76,46 @@ class RewardInventory extends RewardBoxInventory{
 
 	/**
 	 * @param Player $player
+	 */
+	public function writePlayerData(Player $player) : void{
+		$dataPath = RewardBox::getInstance()->getDataFolder() . "players/";
+		if(!file_exists($dataPath)){
+			mkdir($dataPath, 0777, true);
+		}
+
+		$filename = "{$dataPath}/{$player->getLowerCaseName()}.dat";
+		$namedTag = null;
+		if(file_exists($filename)){
+			$namedTag = (new BigEndianNBTStream())->readCompressed(file_get_contents($filename));
+		}
+		if(!$namedTag instanceof CompoundTag){
+			$namedTag = new CompoundTag();
+		}
+
+		$pos = $this->holder instanceof Position ? $this->holder : Position::fromObject($this->holder, $player->level);
+		$namedTag->setTag($this->nbtSerialize(HashUtils::positionHash($pos)));
+		file_put_contents($filename, (new BigEndianNBTStream())->writeCompressed($namedTag));
+	}
+
+	/**
+	 * @param Player $player
 	 * @param string $chestHash
 	 *
 	 * @return null|RewardInventory
 	 */
-	public static function fromPlayer(Player $player, string $chestHash) : ?RewardInventory{
-		$pluginTag = $player->namedtag->getCompoundTag(RewardBox::TAG_PLUGIN);
-		if($pluginTag === null){
+	public static function readPlayerData(Player $player, string $chestHash) : ?RewardInventory{
+		$filename = RewardBox::getInstance()->getDataFolder() . "players/{$player->getLowerCaseName()}.dat";
+		if(!file_exists($filename)){
 			return null;
 		}
 
-		$tag = $pluginTag->getCompoundTag($chestHash);
-		if($tag !== null){
+		$namedTag = (new BigEndianNBTStream())->readCompressed(file_get_contents($filename));
+		if(!$namedTag instanceof CompoundTag){
+			throw new \RuntimeException("Invalid data found in \"{$filename}\", expected " . CompoundTag::class . ", got " . (is_object($namedTag) ? get_class($namedTag) : gettype($namedTag)));
+		}
+
+		$tag = $namedTag->getCompoundTag($chestHash);
+		if($tag === null){
 			return null;
 		}
 

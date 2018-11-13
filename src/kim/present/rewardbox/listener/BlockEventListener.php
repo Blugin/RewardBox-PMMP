@@ -77,7 +77,7 @@ class BlockEventListener implements Listener{
 				return;
 			}
 
-			$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
+			$rewardInventory = RewardInventory::readPlayerData($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
 			if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
 				$rewardInventory->setCustomName($rewardBoxInventory->getCustomName());
 				$player->addWindow($rewardInventory);
