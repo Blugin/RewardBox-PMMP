@@ -127,7 +127,7 @@ class RewardBoxInventory extends CustomInventory{
 				continue;
 			}
 			$pk->windowId = $id;
-			$player->dataPacket($pk);
+			$player->sendDataPacket($pk);
 		}
 	}
 
