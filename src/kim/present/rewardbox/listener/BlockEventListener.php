@@ -63,24 +63,28 @@ class BlockEventListener implements Listener{
 	 * @param PlayerInteractEvent $event
 	 */
 	public function onPlayerInteractEvent(PlayerInteractEvent $event) : void{
+		if($event->isCancelled()){
+			return;
+		}
+
 		$player = $event->getPlayer();
-		if(!$event->isCancelled()){
-			$task = PlayerAct::getAct($player);
-			if($task !== null){
-				$task->onPlayerInteractEvent($event);
-			}elseif(!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK){
-				$rewardBoxInventory = $this->plugin->getRewardBox($event->getBlock(), true);
-				if($rewardBoxInventory !== null){
-					$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
-					if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
-						$rewardInventory->setCustomName($rewardBoxInventory->getCustomName());
-						$player->addWindow($rewardInventory);
-					}else{
-						$player->addWindow(RewardInventory::fromRewardBox($player, $rewardBoxInventory));
-					}
-					$event->setCancelled();
-				}
+		$task = PlayerAct::getAct($player);
+		if($task !== null){
+			$task->onPlayerInteractEvent($event);
+		}elseif(!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+			$rewardBoxInventory = $this->plugin->getRewardBox($event->getBlock(), true);
+			if($rewardBoxInventory === null){
+				return;
 			}
+
+			$rewardInventory = RewardInventory::fromPlayer($player, HashUtils::positionHash($rewardBoxInventory->getHolder()));
+			if($rewardInventory !== null && $rewardInventory->getCreationTime() === $rewardBoxInventory->getCreationTime()){
+				$rewardInventory->setCustomName($rewardBoxInventory->getCustomName());
+				$player->addWindow($rewardInventory);
+			}else{
+				$player->addWindow(RewardInventory::fromRewardBox($player, $rewardBoxInventory));
+			}
+			$event->setCancelled();
 		}
 	}
 }

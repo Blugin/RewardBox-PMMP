@@ -59,11 +59,13 @@ class RewardInventory extends RewardBoxInventory{
 		if($pluginTag === null){
 			$pluginTag = new CompoundTag(RewardBox::TAG_PLUGIN);
 		}
+
 		if($this->holder instanceof Position){
 			$pos = $this->holder;
 		}else{
 			$pos = Position::fromObject($this->holder, $who->level);
 		}
+
 		$pluginTag->setTag($this->nbtSerialize(HashUtils::positionHash($pos)));
 		$who->namedtag->setTag($pluginTag);
 	}
@@ -92,13 +94,16 @@ class RewardInventory extends RewardBoxInventory{
 	 */
 	public static function fromPlayer(Player $player, string $chestHash) : ?RewardInventory{
 		$pluginTag = $player->namedtag->getCompoundTag(RewardBox::TAG_PLUGIN);
-		if($pluginTag !== null){
-			$tag = $pluginTag->getCompoundTag($chestHash);
-			if($tag !== null){
-				return self::fromRewardBox($player, parent::nbtDeserialize($tag));
-			}
+		if($pluginTag === null){
+			return null;
 		}
-		return null;
+
+		$tag = $pluginTag->getCompoundTag($chestHash);
+		if($tag !== null){
+			return null;
+		}
+
+		return self::fromRewardBox($player, parent::nbtDeserialize($tag));
 	}
 
 	/**

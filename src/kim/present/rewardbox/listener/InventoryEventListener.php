@@ -26,9 +26,7 @@ namespace kim\present\rewardbox\listener;
 
 use kim\present\rewardbox\inventory\RewardInventory;
 use kim\present\rewardbox\RewardBox;
-use pocketmine\event\inventory\{
-	InventoryOpenEvent, InventoryTransactionEvent
-};
+use pocketmine\event\inventory\{InventoryOpenEvent, InventoryTransactionEvent};
 use pocketmine\event\Listener;
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
@@ -58,10 +56,8 @@ class InventoryEventListener implements Listener{
 				if($inventory instanceof RewardInventory){
 					$event->setCancelled();
 					return;
-				}elseif($inventory instanceof ChestInventory){
-					if($this->plugin->getRewardBox($inventory->getHolder(), true) !== null){
-						$event->setCancelled();
-					}
+				}elseif($inventory instanceof ChestInventory && $this->plugin->getRewardBox($inventory->getHolder(), true) !== null){
+					$event->setCancelled();
 				}
 			}
 		}
@@ -74,10 +70,8 @@ class InventoryEventListener implements Listener{
 	 */
 	public function onInventoryOpenEvent(InventoryOpenEvent $event) : void{
 		$inventory = $event->getInventory();
-		if($inventory instanceof ChestInventory){
-			if($this->plugin->getRewardBox($inventory->getHolder(), true) !== null){
-				$event->setCancelled();
-			}
+		if($inventory instanceof ChestInventory && $this->plugin->getRewardBox($inventory->getHolder(), true) !== null){
+			$event->setCancelled();
 		}
 	}
 }

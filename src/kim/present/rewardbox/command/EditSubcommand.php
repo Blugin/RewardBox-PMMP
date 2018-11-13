@@ -37,21 +37,21 @@ class EditSubcommand extends Subcommand{
 	 * @param string[]      $args = []
 	 */
 	public function execute(CommandSender $sender, array $args = []) : void{
-		if($sender instanceof Player){
-			$closure = function(Chest $chest) use ($sender) : bool{
-				$rewardBoxInventory = $this->plugin->getRewardBox($chest, true);
-				if($rewardBoxInventory === null){
-					$sender->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
-					return true;
-				}
-
-				$sender->addWindow($rewardBoxInventory);
-				return true;
-			};
-			PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
-			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.edit"));
-		}else{
+		if(!$sender instanceof Player){
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));
+			return;
 		}
+
+		PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, function(Chest $chest) use ($sender) : bool{
+			$rewardBoxInventory = $this->plugin->getRewardBox($chest, true);
+			if($rewardBoxInventory === null){
+				$sender->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
+				return true;
+			}
+
+			$sender->addWindow($rewardBoxInventory);
+			return true;
+		}));
+		$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.edit"));
 	}
 }

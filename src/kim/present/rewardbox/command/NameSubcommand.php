@@ -37,27 +37,29 @@ class NameSubcommand extends Subcommand{
 	 * @param string[]      $args = []
 	 */
 	public function execute(CommandSender $sender, array $args = []) : void{
-		if($sender instanceof Player){
-			if(empty($args)){
-				$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name.usage"));
-			}else{
-				$name = implode(" ", $args);
-				$closure = function(Chest $chest) use ($sender, $name) : bool{
-					$rewardBoxInventory = $this->plugin->getRewardBox($chest, true);
-					if($rewardBoxInventory === null){
-						$sender->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
-						return true;
-					}
-
-					$rewardBoxInventory->setCustomName($name);
-					$sender->sendMessage($this->plugin->getLanguage()->translate("acts.name.success", [$name]));
-					return true;
-				};
-				PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
-				$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name"));
-			}
-		}else{
+		if(!$sender instanceof Player){
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));
+			return;
 		}
+
+		if(empty($args)){
+			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name.usage"));
+			return;
+		}
+
+		$name = implode(" ", $args);
+		$closure = function(Chest $chest) use ($sender, $name) : bool{
+			$rewardBoxInventory = $this->plugin->getRewardBox($chest, true);
+			if($rewardBoxInventory === null){
+				$sender->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
+				return true;
+			}
+
+			$rewardBoxInventory->setCustomName($name);
+			$sender->sendMessage($this->plugin->getLanguage()->translate("acts.name.success", [$name]));
+			return true;
+		};
+		PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
+		$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name"));
 	}
 }

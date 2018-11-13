@@ -37,17 +37,17 @@ class CreateSubcommand extends Subcommand{
 	 * @param string[]      $args = []
 	 */
 	public function execute(CommandSender $sender, array $args = []) : void{
-		if($sender instanceof Player){
-			$name = empty($args) ? "RewardBox" : implode(" ", $args);
-			$closure = function(Chest $chest) use ($sender, $name) : bool{
-				$messageId = "acts.create." . ($this->plugin->createRewardBox($chest, $name) ? "success" : "already");
-				$sender->sendMessage($this->plugin->getLanguage()->translate($messageId));
-				return true;
-			};
-			PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
-			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.create"));
-		}else{
+		if(!$sender instanceof Player){
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));
+			return;
 		}
+
+		$name = empty($args) ? "RewardBox" : implode(" ", $args);
+		PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, function(Chest $chest) use ($sender, $name) : bool{
+			$messageId = "acts.create." . ($this->plugin->createRewardBox($chest, $name) ? "success" : "already");
+			$sender->sendMessage($this->plugin->getLanguage()->translate($messageId));
+			return true;
+		}));
+		$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.create"));
 	}
 }

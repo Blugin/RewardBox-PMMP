@@ -57,9 +57,6 @@ class RewardBox extends PluginBase{
 	/** @var PluginLang */
 	private $language;
 
-	/** @var PluginCommand */
-	private $command;
-
 	/** @var Subcommand[] */
 	private $subcommands;
 
@@ -83,8 +80,6 @@ class RewardBox extends PluginBase{
 		$this->saveResource("lang/language.list", false);
 
 		//Load config file
-		$this->saveDefaultConfig();
-		$this->reloadConfig();
 		$config = $this->getConfig();
 
 		//TODO: Check latest version
@@ -108,12 +103,12 @@ class RewardBox extends PluginBase{
 		}
 
 		//Register main command
-		$this->command = new PluginCommand($config->getNested("command.name"), $this);
-		$this->command->setPermission("rewardbox.cmd");
-		$this->command->setAliases($config->getNested("command.aliases"));
-		$this->command->setUsage($this->language->translate("commands.rewardbox.usage"));
-		$this->command->setDescription($this->language->translate("commands.rewardbox.description"));
-		$this->getServer()->getCommandMap()->register($this->getName(), $this->command);
+		$command = new PluginCommand($config->getNested("command.name"), $this);
+		$command->setPermission("rewardbox.cmd");
+		$command->setAliases($config->getNested("command.aliases"));
+		$command->setUsage($this->language->translate("commands.rewardbox.usage"));
+		$command->setDescription($this->language->translate("commands.rewardbox.description"));
+		$this->getServer()->getCommandMap()->register($this->getName(), $command);
 
 		//Register subcommands
 		$this->subcommands = [
@@ -177,6 +172,7 @@ class RewardBox extends PluginBase{
 				}
 			}
 			$targetSubcommand->handle($sender);
+			return true;
 		}else{
 			$label = array_shift($args);
 			foreach($this->subcommands as $key => $subcommand){
@@ -195,18 +191,20 @@ class RewardBox extends PluginBase{
 	 * @return bool
 	 */
 	public function saveDefaultConfig() : bool{
+		$configFile = "{$this->getDataFolder()}config.yml";
+		if(file_exists($configFile)){
+			return false;
+		}
+
 		$resource = $this->getResource("lang/{$this->getServer()->getLanguage()->getLang()}/config.yml");
 		if($resource === null){
 			$resource = $this->getResource("lang/" . PluginLang::FALLBACK_LANGUAGE . "/config.yml");
 		}
 
-		if(!file_exists($configFile = "{$this->getDataFolder()}config.yml")){
-			$ret = stream_copy_to_stream($resource, $fp = fopen($configFile, "wb")) > 0;
-			fclose($fp);
-			fclose($resource);
-			return $ret;
-		}
-		return false;
+		$ret = stream_copy_to_stream($resource, $fp = fopen($configFile, "wb")) > 0;
+		fclose($fp);
+		fclose($resource);
+		return $ret;
 	}
 
 	/**
@@ -237,24 +235,24 @@ class RewardBox extends PluginBase{
 	 * @return RewardBoxInventory|null
 	 */
 	public function getRewardBox(Position $pos, bool $checkSide = false) : ?RewardBoxInventory{
-		if(isset($this->rewardBoxs[$hash = HashUtils::positionHash($pos)])){
-			return $this->rewardBoxs[$hash];
+		$rewardBox = $this->rewardBoxs[HashUtils::positionHash($pos)] ?? null;
+		if($rewardBox !== null){
+			return $rewardBox;
 		}elseif($checkSide){
-			if($pos instanceof Chest){
-				$inventory = $pos->getInventory();
-			}else{
-				$chest = $pos->level->getTile($pos);
-				if($chest instanceof Chest){
-					$inventory = $chest->getInventory();
-				}else{
-					return null;
-				}
+			$chest = $pos->level->getTile($pos);
+			if(!$chest instanceof Chest){
+				return null;
 			}
-			if($inventory instanceof DoubleChestInventory){
-				foreach([$inventory->getLeftSide(), $inventory->getRightSide()] as $key => $chestInventory){
-					if(isset($this->rewardBoxs[$hash = HashUtils::positionHash($chestInventory->getHolder())])){
-						return $this->rewardBoxs[$hash];
-					}
+
+			$inventory = $chest->getInventory();
+			if(!$inventory instanceof DoubleChestInventory){
+				return null;
+			}
+
+			foreach([$inventory->getLeftSide(), $inventory->getRightSide()] as $key => $chestInventory){
+				$rewardBox = $this->rewardBoxs[HashUtils::positionHash($chestInventory->getHolder())] ?? null;
+				if($rewardBox !== null){
+					return $rewardBox;
 				}
 			}
 		}
@@ -269,15 +267,16 @@ class RewardBox extends PluginBase{
 	 */
 	public function removeRewardBox(Position $pos, bool $checkSide = false) : bool{
 		$rewardBoxInventory = $this->getRewardBox($pos, $checkSide);
-		if($rewardBoxInventory !== null){
-			$chest = $pos->level->getTile($pos);
-			if($chest instanceof Chest){
-				$chest->getInventory()->setContents($rewardBoxInventory->getContents(true));
-			}
-			unset($this->rewardBoxs[HashUtils::positionHash($rewardBoxInventory->getHolder())]);
-			return true;
+		if($rewardBoxInventory === null){
+			return false;
 		}
-		return false;
+
+		$chest = $pos->level->getTile($pos);
+		if($chest instanceof Chest){
+			$chest->getInventory()->setContents($rewardBoxInventory->getContents(true));
+		}
+		unset($this->rewardBoxs[HashUtils::positionHash($rewardBoxInventory->getHolder())]);
+		return true;
 	}
 
 	/**
@@ -288,12 +287,13 @@ class RewardBox extends PluginBase{
 	 * @return bool true if successful creation, else false
 	 */
 	public function createRewardBox(Chest $chest, string $customName = "RewardBox", int $creationTime = null) : bool{
-		if($this->getRewardBox($chest, true) === null){
-			$chestInventory = $chest->getInventory();
-			$this->rewardBoxs[HashUtils::positionHash($chest)] = new RewardBoxInventory($chest, $chestInventory->getContents(true), $customName, $creationTime);
-			$chestInventory->clearAll();
-			return true;
+		if($this->getRewardBox($chest, true) !== null){
+			return false;
 		}
-		return false;
+
+		$chestInventory = $chest->getInventory();
+		$this->rewardBoxs[HashUtils::positionHash($chest)] = new RewardBoxInventory($chest, $chestInventory->getContents(true), $customName, $creationTime);
+		$chestInventory->clearAll();
+		return true;
 	}
 }

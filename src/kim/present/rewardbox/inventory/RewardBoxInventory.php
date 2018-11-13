@@ -59,10 +59,7 @@ class RewardBoxInventory extends CustomInventory{
 	public function __construct(Position $holder, array $items = [], string $customName = "RewardBox", ?int $creationTime = null){
 		parent::__construct($holder, $items);
 		$this->customName = $customName;
-		if($creationTime === null){
-			$creationTime = time();
-		}
-		$this->creationTime = $creationTime;
+		$this->creationTime = $creationTime ?? time();
 	}
 
 	/**
@@ -75,9 +72,9 @@ class RewardBoxInventory extends CustomInventory{
 		$pk->z = $this->holder->z;
 		$pk->namedtag = (new NetworkLittleEndianNBTStream())->write(new CompoundTag("", [
 			new StringTag(TILE::TAG_ID, TILE::CHEST),
-			new IntTag(TILE::TAG_X, $this->holder->x),
-			new IntTag(TILE::TAG_Y, $this->holder->y),
-			new IntTag(TILE::TAG_Z, $this->holder->z),
+			new IntTag(TILE::TAG_X, $pk->x),
+			new IntTag(TILE::TAG_Y, $pk->y),
+			new IntTag(TILE::TAG_Z, $pk->z),
 			new StringTag(Chest::TAG_CUSTOM_NAME, $this->getCustomNameTranslate($who))
 		]));
 		$who->sendDataPacket($pk);
@@ -124,7 +121,8 @@ class RewardBoxInventory extends CustomInventory{
 		}
 
 		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
+			$id = $player->getWindowId($this);
+			if($id === ContainerIds::NONE){
 				$this->close($player);
 				continue;
 			}
