@@ -24,27 +24,17 @@ declare(strict_types=1);
 
 namespace kim\present\rewardbox;
 
-use kim\present\rewardbox\command\{
-	CreateSubcommand, EditSubcommand, NameSubcommand, RemoveSubcommand, Subcommand
-};
+use kim\present\rewardbox\command\{CreateSubcommand, EditSubcommand, NameSubcommand, RemoveSubcommand, Subcommand};
 use kim\present\rewardbox\inventory\RewardBoxInventory;
 use kim\present\rewardbox\lang\PluginLang;
-use kim\present\rewardbox\listener\{
-	BlockEventListener, InventoryEventListener, PlayerEventListener
-};
+use kim\present\rewardbox\listener\{BlockEventListener, InventoryEventListener};
 use kim\present\rewardbox\utils\HashUtils;
-use pocketmine\command\{
-	Command, CommandSender, PluginCommand
-};
-use pocketmine\inventory\{
-	DoubleChestInventory
-};
+use pocketmine\command\{Command, CommandSender, PluginCommand};
+use pocketmine\inventory\{DoubleChestInventory};
 use pocketmine\level\Position;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\permission\{
-	Permission, PermissionManager
-};
+use pocketmine\permission\{Permission, PermissionManager};
 use pocketmine\plugin\PluginBase;
 use pocketmine\tile\Chest;
 

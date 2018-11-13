@@ -29,18 +29,10 @@ use pocketmine\inventory\CustomInventory;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\{
-	NBT, NetworkLittleEndianNBTStream
-};
-use pocketmine\nbt\tag\{
-	CompoundTag, IntTag, ListTag, StringTag
-};
-use pocketmine\network\mcpe\protocol\{
-	BlockEntityDataPacket, InventoryContentPacket
-};
-use pocketmine\network\mcpe\protocol\types\{
-	ContainerIds, WindowTypes
-};
+use pocketmine\nbt\{NBT, NetworkLittleEndianNBTStream};
+use pocketmine\nbt\tag\{CompoundTag, IntTag, ListTag, StringTag};
+use pocketmine\network\mcpe\protocol\{BlockEntityDataPacket, InventoryContentPacket};
+use pocketmine\network\mcpe\protocol\types\{ContainerIds, WindowTypes};
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\tile\Chest;
