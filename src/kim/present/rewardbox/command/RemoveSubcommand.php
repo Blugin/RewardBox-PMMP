@@ -24,10 +24,10 @@ declare(strict_types=1);
 
 namespace kim\present\rewardbox\command;
 
-use kim\present\rewardbox\act\child\RemoveAct;
 use kim\present\rewardbox\act\PlayerAct;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
+use pocketmine\tile\Chest;
 
 class RemoveSubcommand extends Subcommand{
 	public const LABEL = "remove";
@@ -38,7 +38,12 @@ class RemoveSubcommand extends Subcommand{
 	 */
 	public function execute(CommandSender $sender, array $args = []) : void{
 		if($sender instanceof Player){
-			PlayerAct::registerAct(new RemoveAct($this->plugin, $sender));
+			$closure = function(Chest $chest) use ($sender) : bool{
+				$messageId = "acts.create." . ($this->plugin->removeRewardBox($chest, true) ? "success" : "notRewardBox");
+				$sender->sendMessage($this->plugin->getLanguage()->translate($messageId));
+				return true;
+			};
+			PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.remove"));
 		}else{
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));

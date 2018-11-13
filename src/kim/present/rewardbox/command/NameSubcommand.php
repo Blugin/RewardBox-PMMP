@@ -24,10 +24,10 @@ declare(strict_types=1);
 
 namespace kim\present\rewardbox\command;
 
-use kim\present\rewardbox\act\child\NameAct;
 use kim\present\rewardbox\act\PlayerAct;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
+use pocketmine\tile\Chest;
 
 class NameSubcommand extends Subcommand{
 	public const LABEL = "name";
@@ -41,7 +41,19 @@ class NameSubcommand extends Subcommand{
 			if(empty($args)){
 				$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name.usage"));
 			}else{
-				PlayerAct::registerAct(new NameAct($this->plugin, $sender, implode(" ", $args)));
+				$name = implode(" ", $args);
+				$closure = function(Chest $chest) use ($sender, $name) : bool{
+					$rewardBoxInventory = $this->plugin->getRewardBox($chest, true);
+					if($rewardBoxInventory === null){
+						$sender->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
+						return true;
+					}
+
+					$rewardBoxInventory->setCustomName($name);
+					$sender->sendMessage($this->plugin->getLanguage()->translate("acts.name.success", [$name]));
+					return true;
+				};
+				PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
 				$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.name"));
 			}
 		}else{

@@ -24,10 +24,10 @@ declare(strict_types=1);
 
 namespace kim\present\rewardbox\command;
 
-use kim\present\rewardbox\act\child\EditAct;
 use kim\present\rewardbox\act\PlayerAct;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
+use pocketmine\tile\Chest;
 
 class EditSubcommand extends Subcommand{
 	public const LABEL = "edit";
@@ -38,7 +38,17 @@ class EditSubcommand extends Subcommand{
 	 */
 	public function execute(CommandSender $sender, array $args = []) : void{
 		if($sender instanceof Player){
-			PlayerAct::registerAct(new EditAct($this->plugin, $sender));
+			$closure = function(Chest $chest) use ($sender) : bool{
+				$rewardBoxInventory = $this->plugin->getRewardBox($chest, true);
+				if($rewardBoxInventory === null){
+					$sender->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notRewardBox"));
+					return true;
+				}
+
+				$sender->addWindow($rewardBoxInventory);
+				return true;
+			};
+			PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.edit"));
 		}else{
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));

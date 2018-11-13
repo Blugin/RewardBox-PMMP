@@ -28,8 +28,9 @@ use kim\present\rewardbox\RewardBox;
 use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\Player;
+use pocketmine\tile\Chest;
 
-abstract class PlayerAct{
+class PlayerAct{
 	/** @var PlayerAct[] */
 	private static $acts = [];
 
@@ -73,19 +74,35 @@ abstract class PlayerAct{
 	/** @var Player */
 	protected $player;
 
+	/** @var \Closure */
+	protected $closure;
+
 	/**
 	 * PlayerAct constructor.
 	 *
 	 * @param RewardBox $plugin
 	 * @param Player    $player
+	 * @param \Closure  $closure
 	 */
-	public function __construct(RewardBox $plugin, Player $player){
+	public function __construct(RewardBox $plugin, Player $player, \Closure $closure){
 		$this->plugin = $plugin;
 		$this->player = $player;
+		$this->closure = $closure;
 	}
 
 	/**
 	 * @param PlayerInteractEvent $event
 	 */
-	public abstract function onPlayerInteractEvent(PlayerInteractEvent $event) : void;
+	public function onPlayerInteractEvent(PlayerInteractEvent $event) : void{
+		if($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+			$chest = $this->player->level->getTile($event->getBlock());
+			if($chest instanceof Chest){
+				($this->closure)($chest);
+				self::unregsiterAct($this);
+			}else{
+				$this->player->sendMessage($this->plugin->getLanguage()->translate("acts.generic.notChest"));
+			}
+			$event->setCancelled();
+		}
+	}
 }

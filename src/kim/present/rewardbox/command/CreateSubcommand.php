@@ -24,10 +24,10 @@ declare(strict_types=1);
 
 namespace kim\present\rewardbox\command;
 
-use kim\present\rewardbox\act\child\CreateAct;
 use kim\present\rewardbox\act\PlayerAct;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
+use pocketmine\tile\Chest;
 
 class CreateSubcommand extends Subcommand{
 	public const LABEL = "create";
@@ -38,7 +38,13 @@ class CreateSubcommand extends Subcommand{
 	 */
 	public function execute(CommandSender $sender, array $args = []) : void{
 		if($sender instanceof Player){
-			PlayerAct::registerAct(new CreateAct($this->plugin, $sender, empty($args) ? "RewardBox" : implode(" ", $args)));
+			$name = empty($args) ? "RewardBox" : implode(" ", $args);
+			$closure = function(Chest $chest) use ($sender, $name) : bool{
+				$messageId = "acts.create." . ($this->plugin->createRewardBox($chest, $name) ? "success" : "already");
+				$sender->sendMessage($this->plugin->getLanguage()->translate($messageId));
+				return true;
+			};
+			PlayerAct::registerAct(new PlayerAct($this->plugin, $sender, $closure));
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.rewardbox.create"));
 		}else{
 			$sender->sendMessage($this->plugin->getLanguage()->translate("commands.generic.onlyPlayer"));
