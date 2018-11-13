@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace kim\present\rewardbox\utils;
 
 use pocketmine\level\Position;
+use pocketmine\Player;
 
 final class HashUtils{
 	/**
@@ -34,5 +35,9 @@ final class HashUtils{
 	 */
 	public static function positionHash(Position $pos) : string{
 		return $pos->x . ":" . $pos->y . ":" . $pos->z . ":" . $pos->level->getFolderName();
+	}
+
+	public static function playerHash(Player $player) : string{
+		return $player->getLowerCaseName();
 	}
 }

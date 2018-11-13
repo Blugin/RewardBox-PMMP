@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace kim\present\rewardbox\act;
 
 use kim\present\rewardbox\RewardBox;
+use kim\present\rewardbox\utils\HashUtils;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\Player;
 
@@ -56,14 +57,14 @@ abstract class PlayerAct{
 	 * @param PlayerAct $task
 	 */
 	public static function registerAct(PlayerAct $task) : void{
-		PlayerAct::$acts[$task->getKey()] = $task;
+		PlayerAct::$acts[HashUtils::playerHash($task->player)] = $task;
 	}
 
 	/**
 	 * @param PlayerAct $task
 	 */
 	public static function unregsiterAct(PlayerAct $task) : void{
-		unset(PlayerAct::$acts[$task->getKey()]);
+		unset(PlayerAct::$acts[HashUtils::playerHash($task->player)]);
 	}
 
 	/** @var RewardBox */
@@ -81,13 +82,6 @@ abstract class PlayerAct{
 	public function __construct(RewardBox $plugin, Player $player){
 		$this->plugin = $plugin;
 		$this->player = $player;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getKey() : string{
-		return $this->player->getLowerCaseName();
 	}
 
 	/**
